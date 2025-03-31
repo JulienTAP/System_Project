@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/build/src",
+  "command": "/usr/bin/cc  -I/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/include -g -std=gnu99 -o CMakeFiles/ShellProgram.dir/main.c.o -c /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/src/main.c",
+  "file": "/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/src/main.c",
+  "output": "src/CMakeFiles/ShellProgram.dir/main.c.o"
+}
+]

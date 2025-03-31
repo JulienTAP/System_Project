@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/shell_program.dir/src/main.c.o -o shell_program 
