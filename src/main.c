@@ -32,6 +32,10 @@ int main() {
             break;
         }
 
+        if(input[0] == '\0') {
+            continue; // Skip empty input
+        }
+
         parse_input(tokens, input, sizeof(input));
 
         if(strcmp(tokens[0], "cd") == 0) {
