@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <string.h>
+#include "read_line.h"
 
+    
 void read_line(char *input, size_t size) {
     printf("> ");
     if (fgets(input, size, stdin) != NULL) {
