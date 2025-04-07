@@ -2,12 +2,27 @@
 
     
 void read_line(char *input, size_t size) {
-    printf("> ");
     if (fgets(input, size, stdin) != NULL) {
         // Remove newline character from input
         input[strcspn(input, "\n")] = 0;
     } else {
         printf("Error reading input.\n");
         input[0] = '\0'; // Set input to an empty string in case of error
+    }
+}
+
+void parse_line(char **tokens, char *input, size_t size) {
+    char *token;
+    size_t index = 0;
+
+    token = strtok(input, " ");
+    while (token != NULL && index < size) {
+        tokens[index++] = token;
+        token = strtok(NULL, " ");
+    }
+
+    // Print tokens for debugging
+    for (size_t i = 0; i < index; i++) {
+        printf("Token[%zu]: %s\n", i, tokens[i]);
     }
 }

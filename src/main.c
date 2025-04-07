@@ -5,19 +5,23 @@
 
 
 int main() {
-    char input[256];
+    char input[1024];
+    char *tokens[100];
 
     printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 
     while (1) {
-        read_line(input, sizeof(input));
+        printf("$> ");
+        fflush(stdout); // Ensure prompt is displayed immediately
 
+        read_line(input, sizeof(input));
         if (strcmp(input, "exit") == 0 || strcmp(input, "q") == 0) {
             printf("Exiting terminal.\n");
             break;
         }
 
-        printf("You entered: %s\n", input);
+        parse_line(tokens, input, sizeof(input));
+
     }
 
     return 0;

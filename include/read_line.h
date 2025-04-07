@@ -6,4 +6,6 @@
 
 void read_line(char *input, size_t size);
 
+void parse_line(char **tokens, char *input, size_t size);
+
 #endif // READ_LINE_H
