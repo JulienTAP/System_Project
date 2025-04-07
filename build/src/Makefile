@@ -154,6 +154,30 @@ main.c.s:
 	cd /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ShellProgram.dir/build.make src/CMakeFiles/ShellProgram.dir/main.c.s
 .PHONY : main.c.s
 
+read_line.o: read_line.c.o
+.PHONY : read_line.o
+
+# target to build an object file
+read_line.c.o:
+	cd /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ShellProgram.dir/build.make src/CMakeFiles/ShellProgram.dir/read_line.c.o
+.PHONY : read_line.c.o
+
+read_line.i: read_line.c.i
+.PHONY : read_line.i
+
+# target to preprocess a source file
+read_line.c.i:
+	cd /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ShellProgram.dir/build.make src/CMakeFiles/ShellProgram.dir/read_line.c.i
+.PHONY : read_line.c.i
+
+read_line.s: read_line.c.s
+.PHONY : read_line.s
+
+# target to generate assembly for a file
+read_line.c.s:
+	cd /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ShellProgram.dir/build.make src/CMakeFiles/ShellProgram.dir/read_line.c.s
+.PHONY : read_line.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -166,6 +190,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... read_line.o"
+	@echo "... read_line.i"
+	@echo "... read_line.s"
 .PHONY : help
 
 
