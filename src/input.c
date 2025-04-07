@@ -20,9 +20,4 @@ void parse_input(char **tokens, char *input, size_t size) {
         tokens[index++] = token;
         token = strtok(NULL, " ");
     }
-
-    // Print tokens for debugging
-    for (size_t i = 0; i < index; i++) {
-        printf("Token[%zu]: %s\n", i, tokens[i]);
-    }
 }
