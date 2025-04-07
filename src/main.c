@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 
 
 int main() {
@@ -44,10 +45,30 @@ int main() {
             } else if (chdir(tokens[1]) != 0) {
                 perror("cd failed");
             }
-        } else if (strcmp(tokens[0], "ls") == 0) {
+        } else if (strcmp(tokens[0], "ls") == 0 || strcmp(tokens[0], "l") == 0) {
             // Call the ls function here
             system("ls");
-        } else {
+        } else if (strcmp(tokens[0], "./") == 0) {
+            // Execute the command in tokens[1]
+            if (tokens[1] != NULL) {
+                pid_t pid = fork();
+                if (pid == 0) {
+                    // Child process
+                    execvp(tokens[1], &tokens[1]);
+                    perror("exec failed");
+                    exit(1);
+                } else if (pid < 0) {
+                    perror("fork failed");
+                } else {
+                    // Parent process
+                    wait(NULL); // Wait for child process to finish
+                }
+            } else {
+                printf("No command provided after './'\n");
+            }
+        }
+        
+        else {
             printf("Command not recognized: %s\n", tokens[0]);
         }
     }
