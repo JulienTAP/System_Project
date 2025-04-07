@@ -1,4 +1,4 @@
-#include "read_line.h"
+#include "input.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -14,13 +14,13 @@ int main() {
         printf("$> ");
         fflush(stdout); // Ensure prompt is displayed immediately
 
-        read_line(input, sizeof(input));
+        read_input(input, sizeof(input));
         if (strcmp(input, "exit") == 0 || strcmp(input, "q") == 0) {
             printf("Exiting terminal.\n");
             break;
         }
 
-        parse_line(tokens, input, sizeof(input));
+        parse_input(tokens, input, sizeof(input));
 
     }
 

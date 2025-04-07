@@ -6,7 +6,7 @@ add_executable(${APP_NAME})
 
 set(src
     ${CWD}/main.c
-    ${CWD}/read_line.c
+    ${CWD}/input.c
 )
 
 target_sources(${APP_NAME} PRIVATE ${src})

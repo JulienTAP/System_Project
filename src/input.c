@@ -1,7 +1,7 @@
-#include "read_line.h"
+#include "input.h"
 
     
-void read_line(char *input, size_t size) {
+void read_input(char *input, size_t size) {
     if (fgets(input, size, stdin) != NULL) {
         // Remove newline character from input
         input[strcspn(input, "\n")] = 0;
@@ -11,7 +11,7 @@ void read_line(char *input, size_t size) {
     }
 }
 
-void parse_line(char **tokens, char *input, size_t size) {
+void parse_input(char **tokens, char *input, size_t size) {
     char *token;
     size_t index = 0;
 

@@ -7,8 +7,8 @@
 },
 {
   "directory": "/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/build/src",
-  "command": "/usr/bin/cc  -I/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/include -g -std=gnu99 -o CMakeFiles/ShellProgram.dir/read_line.c.o -c /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/src/read_line.c",
-  "file": "/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/src/read_line.c",
-  "output": "src/CMakeFiles/ShellProgram.dir/read_line.c.o"
+  "command": "/usr/bin/cc  -I/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/include -g -std=gnu99 -o CMakeFiles/ShellProgram.dir/input.c.o -c /home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/src/input.c",
+  "file": "/home/driss/Bureau/Polytech_Paris-Saclay/ET3_IIM/S6/System/Projet_System/System_Project/src/input.c",
+  "output": "src/CMakeFiles/ShellProgram.dir/input.c.o"
 }
 ]
