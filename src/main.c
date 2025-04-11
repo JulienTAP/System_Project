@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
-
+// Main function to run the terminal
 int main() {
     char input[1024];
     char *tokens[100];
