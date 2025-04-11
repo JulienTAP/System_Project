@@ -1,5 +1,5 @@
 #include "input.h"
-
+#include "structures.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -11,19 +11,30 @@ int main() {
     char input[1024];
     char *tokens[100];
 
+    int bool_banner = 0;
+
     printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 
     system("clear"); // Clear the terminal screen
     chdir(getenv("HOME")); // Change to home directory
 
     while (1) {
-        char *cwd = getcwd(NULL, 0);
-        if (cwd == NULL) {
-            perror("getcwd failed");
+        //VISUEL
+        if(bool_banner!=1){
+            printbanner();
+            bool_banner = 1;
+        }
+
+        char curr_dir[1024];
+        getcwd(curr_dir, sizeof(curr_dir));
+        if (curr_dir == NULL) {
+            perror(RED "getcwd failed" RST);
             return 1;
         }
 
-        printf("%s $> ", cwd);
+        // VISUEL sinon (printf("%s $> ", cwd);)
+        printf(Bold G RED_back " MAROS " RST "%s $> ", curr_dir);
+
         fflush(stdout); // Ensure prompt is displayed immediately
 
         read_input(input, sizeof(input));
@@ -40,36 +51,15 @@ int main() {
         parse_input(tokens, input, sizeof(input));
 
         if(strcmp(tokens[0], "cd") == 0) {
-            if(tokens[1] == NULL) {
-                chdir(getenv("HOME")); // Change to home directory
-            } else if (chdir(tokens[1]) != 0) {
-                perror("cd failed");
-            }
+            handle_cd(tokens);
         } else if (strcmp(tokens[0], "ls") == 0 || strcmp(tokens[0], "l") == 0) {
-            // Call the ls function here
-            system("ls");
+            handle_ls(tokens);
         } else if (strcmp(tokens[0], "./") == 0) {
-            // Execute the command in tokens[1]
-            if (tokens[1] != NULL) {
-                pid_t pid = fork();
-                if (pid == 0) {
-                    // Child process
-                    execvp(tokens[1], &tokens[1]);
-                    perror("exec failed");
-                    exit(1);
-                } else if (pid < 0) {
-                    perror("fork failed");
-                } else {
-                    // Parent process
-                    wait(NULL); // Wait for child process to finish
-                }
-            } else {
-                printf("No command provided after './'\n");
-            }
+            handle_run(tokens);
         }
         
         else {
-            printf("Command not recognized: %s\n", tokens[0]);
+            printf(RED"Command not recognized: %s\n" RST, tokens[0]);
         }
     }
 
