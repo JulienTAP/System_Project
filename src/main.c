@@ -11,7 +11,6 @@ int main() {
     char input[1024];
     char *tokens[100];
 
-    int bool_banner = 0;
 
     printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 

@@ -1,6 +1,5 @@
 #include "input.h"
 #include "io.h"
-#include "io.c"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -148,3 +147,6 @@ void handle_run(char *tokens[100]) {
         printf("No command provided after './'\n");
     }
 }
+
+
+

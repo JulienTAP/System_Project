@@ -8,4 +8,4 @@ int redirect_input(const char *input_source);
 int redirect_output(const char *output_target);
 
 
-#endif // REDIRECT_H
+#endif // IO_H

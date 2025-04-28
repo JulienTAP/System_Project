@@ -7,6 +7,7 @@ add_executable(${APP_NAME})
 set(src
     ${CWD}/main.c
     ${CWD}/input.c
+    ${CWD}/io.c
 )
 
 target_sources(${APP_NAME} PRIVATE ${src})
