@@ -6,6 +6,6 @@
 
 #include "dynamicArray.h"
 
-void parse_input(struct dynamicArray *tab, char *input, size_t size);
+void parse_input(struct dynamicArray *tokens, char *input, size_t size);
 
 #endif // INPUT_H

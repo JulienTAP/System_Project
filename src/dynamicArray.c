@@ -10,7 +10,7 @@ struct dynamicArray init_array(size_t capacity)
     tab.data = (char **)malloc(capacity * sizeof(char[1024]));
     if (tab.data == NULL)
     {
-        perror("malloc error");
+        perror("malloc failed");
         exit(1);
     }
     else
@@ -26,7 +26,7 @@ void add_capacity(struct dynamicArray *Array)
     char **NewTab = (char **)malloc(2 * Array->capacity * sizeof(char[1024]));
     if (NewTab == NULL)
     {
-        perror("malloc error");
+        perror("malloc failed");
         exit(1);
     }
     else
@@ -35,7 +35,6 @@ void add_capacity(struct dynamicArray *Array)
         free(Array->data);
         Array->data = NewTab;
         Array->capacity = 2 * Array->capacity;
-        printf("Capacite augmentée !! \n");
     }
 }
 

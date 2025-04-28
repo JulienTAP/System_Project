@@ -36,7 +36,7 @@ int main()
         {
             printf("tokens[%zu]: %s\n", i, tokens.data[i]);
         }
-        printf("Size: %zu\n", tokens.size);
+        printf("Size : %zu\n", tokens.size);
 
         if (tokens.size == 0)
         {
@@ -97,7 +97,7 @@ int main()
 
         else
         {
-            printf("Command not recognized: %s\n", tokens.data[0]);
+            printf("Command not recognized : %s\n", tokens.data[0]);
         }
 
         // Free the dynamic array
