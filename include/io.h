@@ -7,5 +7,4 @@
 int redirect_input(const char *input_source);
 int redirect_output(const char *output_target);
 
-
 #endif // IO_H
