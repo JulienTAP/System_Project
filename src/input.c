@@ -15,18 +15,9 @@ void parse_input(struct dynamicArray *tokens, char *input, size_t size) {
         input[len - 1] = '\0';
     }
 
-    size_t index = 0;
-
     char *token = strtok(input, " ");
     while (token != NULL) {
-        if (strcmp(token, "./") == 0) {
-            token = strtok(NULL, " ");
-            if (token != NULL) {
-                add_element(tokens, token);
-            }
-        } else {
-            add_element(tokens, token);
-        }
+        add_element(tokens, token); // Add token to dynamic array
         token = strtok(NULL, " ");
     }
 }

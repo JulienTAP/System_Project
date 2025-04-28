@@ -9,12 +9,11 @@
 
 int main()
 {
-    char input[1024];
-    struct dynamicArray tokens = init_array(32); // Initialize dynamic array for tokens
-
+    
+    system("clear"); 
+    
     printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 
-    system("clear");       // Clear the terminal screen
     chdir(getenv("HOME")); // Change to home directory
 
     while (1)
@@ -28,6 +27,9 @@ int main()
 
         printf("%s $> ", cwd); // Display the current working directory
         fflush(stdout);        // Ensure prompt is displayed immediately
+
+        char input[1024];
+        struct dynamicArray tokens = init_array(32); // Initialize dynamic array for tokens
 
         parse_input(&tokens, input, sizeof(input));
 
@@ -54,8 +56,9 @@ int main()
                 perror("cd failed");
             }
         }
-        else if (strcmp(tokens.arr[0], "exit") == 0 || strcmp(tokens.arr[0], "q") == 0 && tokens.size == 1)
+        else if (strcmp(tokens.arr[0], "exit") == 0 || strcmp(tokens.arr[0], "q") == 0)
         {
+            printf("Exiting...\n");
             free(cwd);
             break; // Exit the loop if user types 'exit' or 'q'
         }
@@ -97,6 +100,9 @@ int main()
         {
             printf("Command not recognized: %s\n", tokens.arr[0]);
         }
+
+        // Free the dynamic array
+        free(tokens.arr);
     }
 
     return 0;

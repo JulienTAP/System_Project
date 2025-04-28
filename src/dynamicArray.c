@@ -49,7 +49,7 @@ void pop_element(struct dynamicArray *Array, int index){
        for(size_t i=index;i<Array->size-1;i++){
         Array->arr[i]==Array->arr[i+1];
        }
-       Array->arr[Array->size] = '\0';
+       Array->arr[Array->size] = NULL;
        Array->size --;
     }
 }
