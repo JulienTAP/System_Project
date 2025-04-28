@@ -5,6 +5,15 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
+void clear()
+{
+    // Clear the terminal screen
+    if (system("clear") == -1)
+    {
+        perror("clear failed");
+    }
+}
+
 char *get_cwd()
 {
     char *cwd = getcwd(NULL, 0);

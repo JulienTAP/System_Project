@@ -10,7 +10,7 @@
 
 int main()
 {
-    system("clear");
+    clear(); // Clear the terminal screen
 
     printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 
