@@ -34,7 +34,7 @@ int main()
 
         for (size_t i = 0; i < tokens.size; i++)
         {
-            printf("tokens[%zu]: %s\n", i, tokens.arr[i]);
+            printf("tokens[%zu]: %s\n", i, tokens.data[i]);
         }
         printf("Size: %zu\n", tokens.size);
 
@@ -44,38 +44,38 @@ int main()
             continue; // Skip empty input
         }
 
-        if (strcmp(tokens.arr[0], "cd") == 0)
+        if (strcmp(tokens.data[0], "cd") == 0)
         {
-            if (tokens.arr[1] == NULL)
+            if (tokens.data[1] == NULL)
             {
                 chdir(getenv("HOME")); // Change to home directory
             }
-            else if (chdir(tokens.arr[1]) != 0)
+            else if (chdir(tokens.data[1]) != 0)
             {
                 perror("cd failed");
             }
         }
-        else if (strcmp(tokens.arr[0], "exit") == 0 || strcmp(tokens.arr[0], "q") == 0)
+        else if (strcmp(tokens.data[0], "exit") == 0 || strcmp(tokens.data[0], "q") == 0)
         {
             printf("Exiting...\n");
             free(cwd);
             break; // Exit the loop if user types 'exit' or 'q'
         }
-        else if (strcmp(tokens.arr[0], "ls") == 0 || strcmp(tokens.arr[0], "l") == 0)
+        else if (strcmp(tokens.data[0], "ls") == 0 || strcmp(tokens.data[0], "l") == 0)
         {
             // Call the ls function here
             system("ls");
         }
-        else if (strcmp(tokens.arr[0], "./") == 0)
+        else if (strcmp(tokens.data[0], "./") == 0)
         {
             // Execute the command in tokens[1]
-            if (tokens.arr[1] != NULL)
+            if (tokens.data[1] != NULL)
             {
                 pid_t pid = fork();
                 if (pid == 0)
                 {
                     // Child process
-                    execvp(tokens.arr[1], &tokens.arr[1]);
+                    execvp(tokens.data[1], &tokens.data[1]);
                     perror("exec failed");
                     exit(1);
                 }
@@ -97,11 +97,11 @@ int main()
 
         else
         {
-            printf("Command not recognized: %s\n", tokens.arr[0]);
+            printf("Command not recognized: %s\n", tokens.data[0]);
         }
 
         // Free the dynamic array
-        free(tokens.arr);
+        free(tokens.data);
     }
 
     return 0;

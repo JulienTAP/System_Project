@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 struct dynamicArray { // dynamic array to store char token
-    char **arr;
+    char **data;
     size_t size;
     size_t capacity;
 };

@@ -7,8 +7,8 @@
 struct dynamicArray init_array(size_t capacity)
 {
     struct dynamicArray tab;
-    tab.arr = (char **)malloc(capacity * sizeof(char[1024]));
-    if (tab.arr == NULL)
+    tab.data = (char **)malloc(capacity * sizeof(char[1024]));
+    if (tab.data == NULL)
     {
         perror("malloc error");
         exit(1);
@@ -31,9 +31,9 @@ void add_capacity(struct dynamicArray *Array)
     }
     else
     {
-        memcpy(NewTab, Array->arr, Array->size * sizeof(char));
-        free(Array->arr);
-        Array->arr = NewTab;
+        memcpy(NewTab, Array->data, Array->size * sizeof(char));
+        free(Array->data);
+        Array->data = NewTab;
         Array->capacity = 2 * Array->capacity;
         printf("Capacite augmentée !! \n");
     }
@@ -45,7 +45,7 @@ void add_element(struct dynamicArray *Array, char *element)
     {
         add_capacity(Array);
     }
-    Array->arr[Array->size] = element;
+    Array->data[Array->size] = element;
     Array->size++;
 }
 
@@ -59,9 +59,9 @@ void pop_element(struct dynamicArray *Array, int index)
     {
         for (size_t i = index; i < Array->size - 1; i++)
         {
-            Array->arr[i] == Array->arr[i + 1];
+            Array->data[i] == Array->data[i + 1];
         }
-        Array->arr[Array->size] = NULL;
+        Array->data[Array->size] = NULL;
         Array->size--;
     }
 }
@@ -72,6 +72,6 @@ void print_elements(struct dynamicArray *Array)
     printf("Elements :\n");
     for (int i = 0; i < Array->size; i++)
     {
-        printf("%c\n", Array->arr[i]);
+        printf("%s\n", Array->data[i]);
     }
 }
