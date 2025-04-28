@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int rediriger_entre(const char *input_source);
-int rediriger_sortie(const char *output_target);
+int redirect_input(const char *input_source);
+int redirect_output(const char *output_target);
+
 
 #endif // REDIRECT_H

@@ -6,41 +6,44 @@
 #include <sys/wait.h>    
 #include <fcntl.h>
 
-int rediriger_entre(const char *source){
-    //Ouvrir le fichier source pour lecture unniquement
-    int nouv_entre = open(source, O_RDONLY);
-    if (nouv_entre < 0) {
-        perror("Failed to open source file : ");
+
+int redirect_input(const char *source) {
+    // Open the source file for reading only
+    int new_input = open(source, O_RDONLY);
+    if (new_input < 0) {
+        perror("Failed to open source file: ");
         return -1;
     }
     
-    // Remplacer stdin par le fichier source
-    if (dup2(nouv_entre, STDIN_FILENO) < 0) {
-        perror("Failed to change entry : ");
-        close(nouv_entre);
+    // Replace stdin with the source file
+    if (dup2(new_input, STDIN_FILENO) < 0) {
+        perror("Failed to redirect input: ");
+        close(new_input);
         return -1;
     }
 
-    //Fermer le descripteur inutile
-    close(nouv_entre);
+    // Close the now-unnecessary file descriptor
+    close(new_input);
     return 0;
 }
 
-int rediriger_sortie(const char *sortie){
-    // Ouvrir ou créer le fichier de sortie en écriture
-    int nouv_sortie = open(sortie, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-    if (nouv_sortie < 0) {
-        perror("Failed to open output file : ");
+
+int redirect_output(const char *output) {
+    // Open or create the output file for writing
+    int new_output = open(output, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    if (new_output < 0) {
+        perror("Failed to open output file: ");
         return -1;
     }
     
-    //Remplacer stdout par le fichier de sortie
-    if (dup2(nouv_sortie, STDOUT_FILENO) < 0) {
-        perror("Failed to change output : ");
-        close(nouv_sortie);
+    // Replace stdout with the output file
+    if (dup2(new_output, STDOUT_FILENO) < 0) {
+        perror("Failed to redirect output: ");
+        close(new_output);
         return -1;
     }
 
-    close(nouv_sortie);
+    // Close the now-unnecessary file descriptor
+    close(new_output);
     return 0;
 }

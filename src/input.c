@@ -29,115 +29,122 @@ void parse_input(char **tokens, char *input, size_t size) {
     }
 }
 
-void handle_cd(char *tokens[100]){
-    if(tokens[1] == NULL) {
+void handle_cd(char *tokens[100]) {
+    if (tokens[1] == NULL) {
         chdir(getenv("HOME")); // Change to home directory
     } else if (chdir(tokens[1]) != 0) {
         perror("cd failed");
     }
 }
 
-void handle_ls(char *tokens[100]) {
-    char *sortie = NULL;
+void handle_ls_parse(char *tokens[100]) {
+    char *output = NULL;
     
-    //  On cherche une redirection de sortie
+    // Search for output redirection
     for (int i = 0; tokens[i] != NULL; i++) {
         if (strcmp(tokens[i], ">") == 0 && tokens[i+1] != NULL) {
-            sortie = tokens[i+1];  // On stocke le nom du fichier de sortie
-            tokens[i] = NULL;  // On tronque la commande pour system()
-            break;  // On s'arrête après avoir trouvé >
+            output = tokens[i+1];  // Store the name of the output file
+            tokens[i] = NULL;      // Truncate the command for system()
+            break;                 // Stop after finding '>'
         }
     }
 
-    // Cas sans redirection
-    if (sortie == NULL) {
-        system("ls");  // Exécution simple de ls
+    // Case without redirection
+    if (output == NULL) {
+        system("ls");  // Simple execution of ls
         return;
     }
 
-    // Cas avec redirection
+    // Case with redirection
     pid_t pid = fork();
-    if (pid == 0) {  // Processus enfant
-        // On redirige la sortie vers le fichier
-        if (rediriger_sortie(sortie) == -1) {
-            exit(EXIT_FAILURE);  // Échec de la redirection
+    if (pid == 0) {  // Child process
+        // Redirect output to the file
+        if (redirect_output(output) == -1) {
+            exit(EXIT_FAILURE);  // Redirection failed
         }
         
-        system("ls");  // On exécute ls (la sortie ira dans le fichier)
-        exit(0);  // Fin du processus enfant
+        system("ls");  // Execute ls (output goes to the file)
+        exit(0);       // End of child process
     } 
-    else if (pid > 0) {  // Processus parent
-        wait(NULL);  // On attend que le ls se termine
+    else if (pid > 0) {  // Parent process
+        wait(NULL);  // Wait for ls to finish
     } 
     else {
-        perror("Erreur de fork");  // Échec du fork
+        perror("fork error");  // Fork failed
     }
 }
 
-void handle_run(char *tokens[100]) {
-    // On prépare deux variables pour stocker les noms des fichiers
-    // d'entrée et de sortie s'il y a des redirections
-    char *source = NULL;
-    char *sortie = NULL;
-    // Le premier élément du tableau est toujours la commande à exécuter
+void handle_ls(char *tokens[100]) {
+    system("ls");
+}
+
+void handle_run_parse(char *tokens[100]) {
+    // Prepare two variables to store input and output file names if redirections exist
+    char *input_file = NULL;
+    char *output_file = NULL;
+    // The first element of the array is always the command to execute
     char *command = tokens[0];
     
-    // On parcourt tous les éléments de la commande
+    // Loop through all elements of the command
     for (int i = 0; tokens[i] != NULL; i++) {
-        // Si on trouve le symbole <, ça veut dire qu'on veut rediriger l'entrée
         if (tokens[i+1] == NULL) continue;
-        if (strcmp(tokens[i], "<") == 0 ) {
-            // On garde le nom du fichier qui suit le <
-            source = tokens[i+1];
-            // On met NULL à la place du < pour que execvp fonctionne 
-            tokens[i] = "NULL";
+        // If we find the '<' symbol, it means we want to redirect input
+        if (strcmp(tokens[i], "<") == 0) {
+            input_file = tokens[i+1];  // Save the name of the file after '<'
+            tokens[i] = "NULL";        // Replace '<' with NULL so execvp works correctly
         } 
-        // Si on trouve le symbole >, ça veut dire qu'on veut rediriger la sortie
+        // If we find the '>' symbol, it means we want to redirect output
         else if (strcmp(tokens[i], ">") == 0 && tokens[i+1] != NULL) {
-            sortie = tokens[i+1];
+            output_file = tokens[i+1];
             tokens[i] = NULL;
         }
     }
 
-    // On crée un nouveau processus pour exécuter la commande
+    // Create a new process to execute the command
     pid_t pid = fork();
     
-    // Si on est dans le processus enfant
-    if (pid == 0) {
-
-        // Si on a un fichier d'entrée, on fait la redirection
-        if (source && rediriger_entre(source) == -1) {
-            exit(EXIT_FAILURE); // Si ça échoue, on quitte
+    if (pid == 0) {  // Child process
+        // If there is an input file, perform input redirection
+        if (input_file && redirect_input(input_file) == -1) {
+            exit(EXIT_FAILURE); // Exit if redirection fails
         }
         
-        // Si on a un fichier de sortie, on fait la redirection
-        if (sortie && rediriger_sortie(sortie) == -1) {
-            fprintf(stderr, "Échec redirection entrée: %s\n", source);
-            exit(EXIT_FAILURE); // Si ça échoue, on quitte
+        // If there is an output file, perform output redirection
+        if (output_file && redirect_output(output_file) == -1) {
+            fprintf(stderr, "Input redirection failed: %s\n", input_file);
+            exit(EXIT_FAILURE); // Exit if redirection fails
         }
 
-        // On exécute la commande avec les arguments
+        // Execute the command with its arguments
         execvp(tokens[1], &tokens[1]);
 
-        // Si execvp échoue, on affiche l'erreur et on quitte
-        perror("Échec execvp");
+        // If execvp fails, print the error and exit
+        perror("execvp failed");
         exit(1);
 
-    } 
-
-    // Si fork a échoué
-    else if (pid < 0) {
+    } else if (pid < 0) {  // Fork failed
         perror("fork failed");
-    } 
-    
-    // Si on est dans le processus parent
-    else {
-        // On attend que le processus enfant finisse
-        wait(NULL);
+    } else {  // Parent process
+        wait(NULL); // Wait for the child process to finish
     }
 }
 
-
-
-
-
+void handle_run(char *tokens[100]) {
+    // Execute the command stored in tokens[1]
+    if (tokens[1] != NULL) {
+        pid_t pid = fork();
+        if (pid == 0) {
+            // Child process
+            execvp(tokens[1], &tokens[1]);
+            perror("exec failed");
+            exit(1);
+        } else if (pid < 0) {
+            perror("fork failed");
+        } else {
+            // Parent process
+            wait(NULL); // Wait for the child process to finish
+        }
+    } else {
+        printf("No command provided after './'\n");
+    }
+}

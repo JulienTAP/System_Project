@@ -19,11 +19,6 @@ int main() {
     chdir(getenv("HOME")); // Change to home directory
 
     while (1) {
-        //VISUEL
-        if(bool_banner!=1){
-            printbanner();
-            bool_banner = 1;
-        }
 
         char curr_dir[1024];
         getcwd(curr_dir, sizeof(curr_dir));
@@ -32,8 +27,8 @@ int main() {
             return 1;
         }
 
-        // VISUEL sinon (printf("%s $> ", cwd);)
-        printf(Bold G RED_back " MAROS " RST "%s $> ", curr_dir);
+        printf("%s $> ", curr_dir);
+
 
         fflush(stdout); // Ensure prompt is displayed immediately
 
