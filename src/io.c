@@ -51,3 +51,41 @@ int redirect_output(const char *output)
     close(new_output);
     return 0;
 }
+
+void handle_redirection(struct dynamicArray *tokens)
+{
+
+    for (size_t i = 0; i < tokens->size; i++)
+    {
+        if (strcmp(tokens->data[i], "<") == 0 && i + 1 < tokens->size)
+        {
+            // Redirect input from the file specified after "<"
+            if (redirect_input(tokens->data[i + 1]) < 0)
+            {
+                fprintf(stderr, "Error redirecting input\n");
+            }
+            // Remove the redirection token and its argument from the array
+            for (size_t j = i; j < tokens->size - 2; j++)
+            {
+                tokens->data[j] = tokens->data[j + 2];
+            }
+            tokens->size -= 2;
+            i--; // Adjust index to account for removed elements
+        }
+        else if (strcmp(tokens->data[i], ">") == 0 && i + 1 < tokens->size)
+        {
+            // Redirect output to the file specified after ">"
+            if (redirect_output(tokens->data[i + 1]) < 0)
+            {
+                fprintf(stderr, "Error redirecting output\n");
+            }
+            // Remove the redirection token and its argument from the array
+            for (size_t j = i; j < tokens->size - 2; j++)
+            {
+                tokens->data[j] = tokens->data[j + 2];
+            }
+            tokens->size -= 2;
+            i--; // Adjust index to account for removed elements
+        }
+    }
+}

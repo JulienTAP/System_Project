@@ -1,6 +1,7 @@
 #include "systemFunctions.h"
 #include "input.h"
 #include "dynamicArray.h"
+#include "io.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -16,8 +17,15 @@ int main()
 
     chdir(getenv("HOME")); // Change to home directory
 
+    int stdin_backup = dup(STDIN_FILENO);   // Save the input stream
+    int stdout_backup = dup(STDOUT_FILENO); // Save the output stream
+
     while (1)
     {
+        // After handling redirection, restore stdin and stdout
+        dup2(stdin_backup, STDIN_FILENO);
+        dup2(stdout_backup, STDOUT_FILENO);
+
         char *cwd = get_cwd(); // Get current working directory
 
         printf("%s $> ", cwd); // Display the current working directory
@@ -39,6 +47,8 @@ int main()
             free(cwd);
             continue; // Skip empty input
         }
+
+        handle_redirection(&tokens); // Handle input/output redirection
 
         if (strcmp(tokens.data[0], "cd") == 0)
         {
