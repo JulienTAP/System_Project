@@ -77,7 +77,7 @@ int job_is_completed(job *j) {
 }
 
 
-// VISUEL (WEIL ES IST SCH)
+// VISUEL (WEIL ES IST SCHÖN)
 #define RST     "\033[0m"
 #define Y       "\033[1;33m"
 #define RED     "\033[38;5;210m"
