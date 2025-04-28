@@ -8,7 +8,7 @@ struct dynamicArray init_array(size_t capacity){
     struct dynamicArray tab;
     tab.arr = (char**) malloc(capacity*sizeof(char[1024]));
     if(tab.arr==NULL){
-        perror("erreur malloc");
+        perror("malloc error");
         exit(1);
     }
     else{
@@ -21,7 +21,7 @@ struct dynamicArray init_array(size_t capacity){
 void add_capacity(struct dynamicArray *Array){
     char **NewTab = (char**) malloc(2*Array->capacity*sizeof(char[1024]));
     if(NewTab == NULL){
-        perror("erreur malloc");
+        perror("malloc error");
         exit(1);
     }
     else{
