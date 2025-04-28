@@ -1,3 +1,4 @@
+#include "systemFunctions.h"
 #include "input.h"
 #include "dynamicArray.h"
 
@@ -17,12 +18,7 @@ int main()
 
     while (1)
     {
-        char *cwd = getcwd(NULL, 0);
-        if (cwd == NULL)
-        {
-            perror("getcwd failed");
-            return 1;
-        }
+        char *cwd = get_cwd(); // Get current working directory
 
         printf("%s $> ", cwd); // Display the current working directory
         fflush(stdout);        // Ensure prompt is displayed immediately
@@ -46,13 +42,28 @@ int main()
 
         if (strcmp(tokens.data[0], "cd") == 0)
         {
-            if (tokens.data[1] == NULL)
+            cd(tokens.data[1]); // Change directory
+            free(cwd);
+            continue; // Skip to next iteration
+        }
+        else if (strcmp(tokens.data[0], "ls") == 0 || strcmp(tokens.data[0], "l") == 0)
+        {
+            ls(); // List files in current directory
+            free(cwd);
+            continue; // Skip to next iteration
+        }
+        else if (strcmp(tokens.data[0], "./") == 0)
+        {
+            // Execute the command in tokens[1]
+            if (tokens.data[1] != NULL)
             {
-                chdir(getenv("HOME")); // Change to home directory
+                execute(tokens.data[1], &tokens.data[1]); // Execute the command
+                free(cwd);
+                continue; // Skip to next iteration
             }
-            else if (chdir(tokens.data[1]) != 0)
+            else
             {
-                perror("cd failed");
+                printf("No command provided after './'\n");
             }
         }
         else if (strcmp(tokens.data[0], "exit") == 0 || strcmp(tokens.data[0], "q") == 0)
@@ -61,40 +72,6 @@ int main()
             free(cwd);
             break; // Exit the loop if user types 'exit' or 'q'
         }
-        else if (strcmp(tokens.data[0], "ls") == 0 || strcmp(tokens.data[0], "l") == 0)
-        {
-            // Call the ls function here
-            system("ls");
-        }
-        else if (strcmp(tokens.data[0], "./") == 0)
-        {
-            // Execute the command in tokens[1]
-            if (tokens.data[1] != NULL)
-            {
-                pid_t pid = fork();
-                if (pid == 0)
-                {
-                    // Child process
-                    execvp(tokens.data[1], &tokens.data[1]);
-                    perror("exec failed");
-                    exit(1);
-                }
-                else if (pid < 0)
-                {
-                    perror("fork failed");
-                }
-                else
-                {
-                    // Parent process
-                    wait(NULL); // Wait for child process to finish
-                }
-            }
-            else
-            {
-                printf("No command provided after './'\n");
-            }
-        }
-
         else
         {
             printf("Command not recognized : %s\n", tokens.data[0]);

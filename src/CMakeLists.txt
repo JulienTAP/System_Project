@@ -8,6 +8,7 @@ set(src
     ${CWD}/main.c
     ${CWD}/input.c
     ${CWD}/dynamicArray.c
+    ${CWD}/systemFunctions.c
 )
 
 target_sources(${APP_NAME} PRIVATE ${src})
