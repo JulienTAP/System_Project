@@ -1,23 +1,32 @@
 #include "input.h"
+#include "dynamicArray.h"
 
-    
-void read_input(char *input, size_t size) {
-    if (fgets(input, size, stdin) != NULL) {
-        // Remove newline character from input
-        input[strcspn(input, "\n")] = 0;
-    } else {
-        printf("Error reading input.\n");
-        input[0] = '\0'; // Set input to an empty string in case of error
+//parse inputs on space or "./"
+void parse_input(struct dynamicArray *tokens, char *input, size_t size) {
+
+    //read input from stdin
+    if (fgets(input, size, stdin) == NULL) {
+        perror("fgets failed");
+        return;
     }
-}
+    //remove newline character
+    size_t len = strlen(input);
+    if (len > 0 && input[len - 1] == '\n') {
+        input[len - 1] = '\0';
+    }
 
-void parse_input(char **tokens, char *input, size_t size) {
-    char *token;
     size_t index = 0;
 
-    token = strtok(input, " ");
-    while (token != NULL && index < size) {
-        tokens[index++] = token;
+    char *token = strtok(input, " ");
+    while (token != NULL) {
+        if (strcmp(token, "./") == 0) {
+            token = strtok(NULL, " ");
+            if (token != NULL) {
+                add_element(tokens, token);
+            }
+        } else {
+            add_element(tokens, token);
+        }
         token = strtok(NULL, " ");
     }
 }
