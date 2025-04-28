@@ -9,8 +9,8 @@
 
 int main()
 {
-    system("clear"); 
-    
+    system("clear");
+
     printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 
     chdir(getenv("HOME")); // Change to home directory
