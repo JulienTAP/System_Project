@@ -10,6 +10,7 @@ set(src
     ${CWD}/dynamicArray.c
     ${CWD}/systemFunctions.c
     ${CWD}/io.c
+    ${CWD}/pipe.c
 )
 
 target_sources(${APP_NAME} PRIVATE ${src})
