@@ -150,7 +150,11 @@ int handle_pipes(struct dynamicArray *tokens, char *cwd) {
             add_element(&pipe_indices, (char*)(long)i);
         }
     }
-
+    if(pipe_indices.size == 0) {
+        printf("No pipes found\n");
+        free(pipe_indices.data);
+        return 0; // No pipes found
+    }
     // Validate all pipe positions
     for (size_t i = 0; i < pipe_indices.size; i++) {
         int idx = (int)(long)pipe_indices.data[i];
