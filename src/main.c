@@ -39,10 +39,11 @@ int main()
         parse_input(&tokens, input, sizeof(input));
 
         // Handle the pipe command, then free the used memory
-        if (handle_pipes(&tokens, cwd)) {
-        free(tokens.data);  // Free command tokens
-        free(cwd);         // Free current working directory string
-        continue;          // Jump to next shell prompt
+        if (handle_pipes(&tokens, cwd))
+        {
+            free(tokens.data); // Free command tokens
+            free(cwd);         // Free current working directory string
+            continue;          // Jump to next shell prompt
         }
 
         for (size_t i = 0; i < tokens.size; i++)
