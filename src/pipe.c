@@ -98,18 +98,21 @@ void execute_pipe(struct dynamicArray *commands)
 // Validates pipe position in command
 int check_pipe_position(struct dynamicArray *tokens, int pipe_index)
 {
-    if (pipe_index == 0 || pipe_index == tokens->size - 1)
+    if (pipe_index == 0)
     {
-        fprintf(stderr, "Error: Pipe at start or end of command\n");
+        fprintf(stderr, "Error : Pipe at start of command\n");
+        return 0;
+    }
+    else if (pipe_index == tokens->size - 1)
+    {
+        fprintf(stderr, "Error : Pipe at end of command\n");
         return 0;
     }
     return 1;
 }
 
 // Combines tokens into a command string
-void build_section(char *section, size_t section_size,
-                   struct dynamicArray *tokens,
-                   size_t start, size_t end)
+void build_section(char *section, size_t section_size, struct dynamicArray *tokens, size_t start, size_t end)
 {
     section[0] = '\0'; // Initialize buffer
 
