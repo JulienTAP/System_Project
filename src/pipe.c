@@ -28,71 +28,85 @@ char **parse_section(char *cmd)
     return args;
 }
 
-// Executes two commands connected by a pipe
-void execute_pipe(struct dynamicArray *commands)
-{
-    int fd[2]; // pipe descriptors
+void execute_pipe(struct dynamicArray *commands) {
+    int num_cmds = commands->size;
+    if (num_cmds < 2) return;
 
-    // Create pipe for inter-process communication
-    if (pipe(fd) == -1)
-    {
-        perror("pipe creation failed");
+    int prev_pipe[2];
+    int next_pipe[2];
+    pid_t pid;
+    
+    // Create first pipe
+    if (pipe(prev_pipe) == -1) {
+        perror("pipe failed");
         return;
     }
 
-    // Fork left process (writer)
-    pid_t left_pid = fork();
-    if (left_pid == 0)
-    {
-        // Left process setup:
-        close(fd[0]); // Close unused read end
-
-        // Redirect stdout to pipe write end
-        if (dup2(fd[1], STDOUT_FILENO) == -1)
-        {
-            perror("dup2 left failed");
-            exit(EXIT_FAILURE);
-        }
-        close(fd[1]); // Clean up original fd
-
-        // Execute left command
-        char **left_args = parse_section(commands->data[0]);
-        execvp(left_args[0], left_args);
-        perror("execvp left failed");
-        free(left_args);
+    // First command (writes to pipe)
+    pid = fork();
+    if (pid == 0) {
+        close(prev_pipe[0]);
+        dup2(prev_pipe[1], STDOUT_FILENO);
+        close(prev_pipe[1]);
+        
+        char **args = parse_section(commands->data[0]);
+        execvp(args[0], args);
+        perror("execvp failed");
+        free(args);
         exit(EXIT_FAILURE);
     }
+    close(prev_pipe[1]); // Parent closes write end
 
-    // Fork right process (reader)
-    pid_t right_pid = fork();
-    if (right_pid == 0)
-    {
-        // Right process setup:
-        close(fd[1]); // Close unused write end
+    // Middle commands (both read and write)
+    for (int i = 1; i < num_cmds-1; i++) {
+        if (pipe(next_pipe) == -1) {
+            perror("pipe failed");
+            return;
+        }
 
-        // Redirect stdin from pipe read end
-        if (dup2(fd[0], STDIN_FILENO) == -1)
-        {
-            perror("dup2 right failed");
+        pid = fork();
+        if (pid == 0) {
+            // Connect to previous pipe for input
+            dup2(prev_pipe[0], STDIN_FILENO);
+            close(prev_pipe[0]);
+            
+            // Connect to next pipe for output
+            dup2(next_pipe[1], STDOUT_FILENO);
+            close(next_pipe[1]);
+            
+            char **args = parse_section(commands->data[i]);
+            execvp(args[0], args);
+            perror("execvp failed");
+            free(args);
             exit(EXIT_FAILURE);
         }
-        close(fd[0]); // Clean up original fd
-
-        // Execute right command
-        char **right_args = parse_section(commands->data[1]);
-        execvp(right_args[0], right_args);
-        perror("execvp right failed");
-        free(right_args);
-        exit(EXIT_FAILURE);
+        
+        // Clean up previous pipe and move to next
+        close(prev_pipe[0]);
+        close(next_pipe[1]);
+        //update pipes
+        prev_pipe[0] = next_pipe[0];
+        prev_pipe[1] = next_pipe[1];
     }
 
-    // Parent process cleanup
-    close(fd[0]); // Close pipe ends
-    close(fd[1]);
+    // Last command (reads from pipe)
+    pid = fork();
+    if (pid == 0) {
+        dup2(prev_pipe[0], STDIN_FILENO);
+        close(prev_pipe[0]);
+        
+        char **args = parse_section(commands->data[num_cmds-1]);
+        execvp(args[0], args);
+        perror("execvp failed");
+        free(args);
+        exit(EXIT_FAILURE);
+    }
+    close(prev_pipe[0]);
 
-    // Wait for child processes
-    waitpid(left_pid, NULL, 0);
-    waitpid(right_pid, NULL, 0);
+    // Wait for all children
+    for (int i = 0; i < num_cmds; i++) {
+        wait(NULL);
+    }
 }
 
 // Validates pipe position in command
@@ -127,40 +141,66 @@ void build_section(char *section, size_t section_size, struct dynamicArray *toke
     }
 }
 
-// Main pipe handling function
-int handle_pipes(struct dynamicArray *tokens, char *cwd)
-{
-    // Locate pipe symbol in tokens
-    int pipe_index = -1;
-    for (size_t i = 0; i < tokens->size; i++)
-    {
-        if (strcmp(tokens->data[i], "|") == 0)
-        {
-            pipe_index = i;
-            break;
+// Handles pipe parsing and execution
+int handle_pipes(struct dynamicArray *tokens, char *cwd) {
+    // Find all pipe positions
+    struct dynamicArray pipe_indices = init_array(4);
+    for (size_t i = 0; i < tokens->size; i++) {
+        if (strcmp(tokens->data[i], "|") == 0) {
+            add_element(&pipe_indices, (char*)(long)i);
         }
     }
 
-    if (pipe_index == -1)
-        return 0; // Early exit if no pipe
-
-    // Validate pipe position
-    if (!check_pipe_position(tokens, pipe_index))
-    {
-        return -1;
+    // Validate all pipe positions
+    for (size_t i = 0; i < pipe_indices.size; i++) {
+        int idx = (int)(long)pipe_indices.data[i];
+        if (!check_pipe_position(tokens, idx)) {
+            free(pipe_indices.data);
+            return -1;
+        }
     }
 
-    // Build left and right sections strings
-    char left_section[1024], right_section[1024];
-    build_section(left_section, sizeof(left_section), tokens, 0, pipe_index);
-    build_section(right_section, sizeof(right_section), tokens, pipe_index + 1, tokens->size);
+    // Split the command into parts between pipes //
+    // Create array to store command sections (need +1 because N pipes means N+1 commands)
+    struct dynamicArray command_list = init_array(pipe_indices.size + 1);
 
-    // Prepare and execute piped commands
-    struct dynamicArray pipe_commands = init_array(2);
-    add_element(&pipe_commands, left_section);
-    add_element(&pipe_commands, right_section);
-    execute_pipe(&pipe_commands);
-    free(pipe_commands.data);
+    size_t current_position = 0; // Start at beginning of tokens
 
-    return 1; // Success
+    // For each pipe position (plus one extra for the last command)
+    for (size_t i = 0; i <= pipe_indices.size; i++) {
+        // Find where this command ends
+        size_t end_position;
+        if (i < pipe_indices.size) {
+            // End at the next pipe
+            end_position = (size_t)(long)pipe_indices.data[i];
+        } else {
+            // For last command, end at the end of tokens
+            end_position = tokens->size;
+        }
+
+        // Make a buffer to hold this command section
+        char command_buffer[1024] = {0}; // Initialize to empty string
+    
+        // Combine all tokens between current_position and end_position
+        build_section(command_buffer, sizeof(command_buffer), 
+                    tokens, current_position, end_position);
+    
+        // Add this command to our array (strdup makes a copy)
+        add_element(&command_list, strdup(command_buffer));
+    
+        // Move past this command and the pipe
+        current_position = end_position + 1;
+    }
+
+    // Execute the pipeline
+    execute_pipe(&command_list);
+
+    // Cleanup
+    for (size_t i = 0; i < command_list.size; i++) {
+        free(command_list.data[i]);
+    }
+    free(command_list.data);
+    free(pipe_indices.data);
+
+    return 1;
 }
