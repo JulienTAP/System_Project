@@ -86,6 +86,24 @@ int main()
                 printf("No command provided after './'\n");
             }
         }
+        else if (strcmp(tokens.data[0], "clear") == 0)
+        {
+            clear(); // Clear the terminal screen
+            free(cwd);
+            continue; // Skip to next iteration
+        }
+        else if (strcmp(tokens.data[0], "pwd") == 0)
+        {
+            printf("%s\n", cwd); // Print current working directory
+            free(cwd);
+            continue; // Skip to next iteration
+        }
+        else if (strcmp(tokens.data[0], "cp") == 0)
+        {
+            cp(tokens.data[1], tokens.data[2]); // Copy file or directory
+            free(cwd);
+            continue; // Skip to next iteration
+        }
         else if (strcmp(tokens.data[0], "exit") == 0 || strcmp(tokens.data[0], "q") == 0)
         {
             printf("Exiting...\n");

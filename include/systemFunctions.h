@@ -6,5 +6,10 @@ char *get_cwd();
 void cd(char *path);
 void ls();
 void execute(char *file, char *args[]);
+void printFilePermissions(char *file);
+int copyFilePermissions(char *src, char *dest);
+int copyFile(char *src, char *dest);
+int copyDirectory(char *src, char *dest);
+void cp(char *src, char *dest);
 
 #endif // SYSTEM_FUNCTIONS_H
