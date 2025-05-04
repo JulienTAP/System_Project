@@ -119,6 +119,19 @@ int main()
             free(cwd);
             continue; // Skip to next iteration
         }
+        else if (strcmp(tokens.data[0], "rm") == 0)
+        {
+            if (tokens.size > 1)
+            {
+                remove(tokens.data[1]); // Remove file
+            }
+            else
+            {
+                printf("No file name provided\n");
+            }
+            free(cwd);
+            continue; // Skip to next iteration
+        }
         else if (strcmp(tokens.data[0], "exit") == 0 || strcmp(tokens.data[0], "q") == 0)
         {
             printf("Exiting...\n");
