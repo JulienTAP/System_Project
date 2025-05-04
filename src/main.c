@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 int main()
 {
@@ -102,6 +103,19 @@ int main()
         {
             pop_element(&tokens, 0); // Remove the 'cp' command from tokens
             cp(&tokens); // Copy file or directory
+            free(cwd);
+            continue; // Skip to next iteration
+        }
+        else if (strcmp(tokens.data[0], "mkdir") == 0)
+        {
+            if (tokens.size > 1)
+            {
+                mkdir(tokens.data[1], 0777); // Create directory with specified permissions
+            }
+            else
+            {
+                printf("No directory name provided\n");
+            }
             free(cwd);
             continue; // Skip to next iteration
         }
