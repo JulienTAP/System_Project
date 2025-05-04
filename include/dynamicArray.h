@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 struct dynamicArray
 { // dynamic array to store char token
@@ -20,5 +21,7 @@ void pop_element(struct dynamicArray *Array, int index);
 void add_element(struct dynamicArray *Array, char *element);
 
 void print_elements(struct dynamicArray *Array);
+
+bool is_empty(struct dynamicArray *Array);
 
 #endif
