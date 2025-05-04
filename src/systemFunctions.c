@@ -49,7 +49,26 @@ void cd(char *path)
 
 void ls()
 {
-    system("ls");
+    // List files in the current directory
+    DIR *dir = opendir(".");
+    if (dir == NULL)
+    {
+        perror("opendir failed");
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (entry->d_name[0] == '.')
+        {
+            continue; // Skip hidden files
+        }
+        printf("%s\t\t", entry->d_name);
+    }
+
+    printf("\n");
+    closedir(dir);
 }
 
 void execute(char *file, char *args[])
@@ -106,192 +125,196 @@ void printFilePermissions(char *file)
 }
 
 /**
- * @brief Copies the permissions from a source file to a destination file.
+ * @brief Copies the permissions from a source to a destination.
  *
- * This function retrieves the permissions of the source file and applies them to the destination file.
+ * This function retrieves the permissions of the source and applies them to the destination.
  * If any error occurs during the process, it prints an error message and returns -1.
  *
- * @param src The path to the source file.
- * @param dest The path to the destination file.
+ * @param src The path to the source.
+ * @param dest The path to the destination.
  * @return 0 on success, -1 on failure.
  */
-int copyFilePermissions(char *src, char *dest)
+int copyPermissions(char *src, char *dest)
 {
     struct stat src_stat;
     // Get the source file permissions
     if (stat(src, &src_stat) < 0)
     {
-        perror("Error getting source file permissions");
+        perror("Error getting source permissions");
         return -1;
     }
 
     // Set the destination file permissions
     if (chmod(dest, src_stat.st_mode) < 0)
     {
-        perror("Error setting destination file permissions");
+        perror("Error setting destination permissions");
         return -1;
     }
 
-    printf("File permissions copied successfully\n");
+    printf("Permissions copied successfully\n");
     return 0;
 }
 
 /**
- * @brief Copies the contents of a source file to a destination file.
+ * @brief Copies a file from the source path to the destination directory.
  *
- * This function opens the source file for reading and the destination file for writing.
- * It reads the contents of the source file in chunks and writes them to the destination file.
- * It also copies the file permissions from the source file to the destination file.
- * If any error occurs during the process, it prints an error message and returns -1.
+ * This function reads the contents of the source file and writes them to a new file
+ * in the destination directory. It also preserves the file permissions.
  *
- * @param src The path to the source file.
- * @param dest The path to the destination file.
+ * @param src_file The path to the source file.
+ * @param dest_directory The path to the destination directory.
  * @return 0 on success, -1 on failure.
  */
-int copyFile(char *src, char *dest)
+int copyFile(char *src_file, char *dest_directory)
 {
-    int src_desc = open(src, O_RDONLY);
-    // Check if the source file was opened successfully
-    if (src_desc < 0)
+    size_t buffer_size = 65536; // Define buffer size
+    char buffer[buffer_size];
+
+    // Open the source file for reading
+    int src_fd = open(src_file, O_RDONLY);
+    if (src_fd < 0)
     {
         perror("Error opening source file");
         return -1;
     }
 
-    int dest_desc = open(dest, O_WRONLY | O_CREAT, 0666);
-    // Check if the destination file was opened/created successfully
-    if (dest_desc < 0)
+    // Construct the destination file path
+    char dest_file[buffer_size];
+    snprintf(dest_file, buffer_size, "%s/%s", dest_directory, strrchr(src_file, '/') ? strrchr(src_file, '/') + 1 : src_file);
+
+    // Open the destination file for writing (create if it doesn't exist)
+    int dest_fd = open(dest_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    if (dest_fd < 0)
     {
-        perror("Error opening/creating destination file");
-        close(src_desc);
+        perror("Error opening destination file");
+        close(src_fd);
         return -1;
     }
 
-    if (copyFilePermissions(src, dest) < 0)
+    // Copy the contents from the source file to the destination file
+    ssize_t bytes_read, bytes_written;
+    while ((bytes_read = read(src_fd, buffer, buffer_size)) > 0)
+    {
+        bytes_written = write(dest_fd, buffer, bytes_read);
+        if (bytes_written < 0)
+        {
+            perror("Error writing to destination file");
+            close(src_fd);
+            close(dest_fd);
+            return -1;
+        }
+    }
+
+    if (bytes_read < 0)
+    {
+        perror("Error reading source file");
+        close(src_fd);
+        close(dest_fd);
+        return -1;
+    }
+
+    // Close the file descriptors
+    close(src_fd);
+    close(dest_fd);
+
+    // Copy the file permissions from the source file to the destination file
+    if (copyPermissions(src_file, dest_file) < 0)
     {
         perror("Error copying file permissions");
-        close(src_desc);
-        close(dest_desc);
         return -1;
     }
 
-    struct stat src_stat;
-    // Check if the source file size can be retrieved
-    if (stat(src, &src_stat) < 0)
-    {
-        perror("Error getting source file size");
-        return -1;
-    }
-    off_t src_size = src_stat.st_size;
-
-    // Copy the contents of the source file to the destination file
-    copy_file_range(src_desc, NULL, dest_desc, NULL, src_size, 0);
-
-    close(src_desc);
-    close(dest_desc);
-
-    printf("File copied successfully\n");
-
+    printf("File copied successfully: %s -> %s\n", src_file, dest_file);
     return 0;
 }
 
 /**
- * @brief Copies the contents of a source directory to a destination directory.
+ * @brief Copies a directory from the source path to the destination path.
  *
- * This function opens the source directory and iterates through its entries.
- * For each entry, it recursively copies directories and files.
- * If any error occurs during the process, it prints an error message and returns -1.
+ * This function recursively copies the contents of the source directory to a new directory
+ * at the destination path. It preserves the permissions of the source directory and its contents.
  *
- * @param src The path to the source directory.
- * @param dest The path to the destination directory.
+ * @param srcDirectory The path to the source directory.
+ * @param destDirectory The path to the destination directory.
  * @return 0 on success, -1 on failure.
  */
-int copyDirectory(char *src, char *dest)
+int copyDirectory(char *srcDirectory, char *destDirectory)
 {
-    DIR *src_dir = opendir(src);
-    if (src_dir == NULL)
+    DIR *srcDir = opendir(srcDirectory);
+    if (srcDir == NULL)
     {
         perror("Error opening source directory");
         return -1;
     }
 
-    struct stat dest_stat;
-    // Check if the destination directory exists
-    if (stat(dest, &dest_stat) < 0)
+    // Construct the destination directory path
+    char destDirPath[PATH_MAX];
+    snprintf(destDirPath, PATH_MAX, "%s/%s", destDirectory, strrchr(srcDirectory, '/') ? strrchr(srcDirectory, '/') + 1 : srcDirectory);
+
+    // Create the destination directory
+    if (mkdir(destDirPath, 0777) < 0)
     {
-        // Destination directory does not exist, create it
-        // Check if the destination directory was created successfully
-        if (mkdir(dest, 0777) < 0)
-        {
-            perror("Error creating destination directory");
-            closedir(src_dir);
-            return -1;
-        }
-    }
-    else if (!S_ISDIR(dest_stat.st_mode))
-    {
-        // Destination exists but is not a directory
-        perror("Destination exists and is not a directory");
-        closedir(src_dir);
+        perror("Error creating destination directory");
+        closedir(srcDir);
         return -1;
     }
 
-    struct dirent *dir_entry;
-    // Copy the contents of the source directory to the destination directory
-    while ((dir_entry = readdir(src_dir)) != NULL)
+    struct dirent *entry;
+    while ((entry = readdir(srcDir)) != NULL)
     {
-        // Skip the current and parent directories
-        if (strcmp(dir_entry->d_name, ".") == 0 || strcmp(dir_entry->d_name, "..") == 0)
+        // Skip "." and ".." entries
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
         {
             continue;
         }
 
-        int buffer_size = 4096;
+        // Construct the source and destination paths for the current entry
+        char srcPath[PATH_MAX];
+        char destPath[PATH_MAX];
+        snprintf(srcPath, PATH_MAX, "%s/%s", srcDirectory, entry->d_name);
+        strncpy(destPath, destDirPath, PATH_MAX - 1);
+        destPath[PATH_MAX - 1] = '\0'; // Ensure null termination
+        strncat(destPath, "/", PATH_MAX - strlen(destPath) - 1);
+        strncat(destPath, entry->d_name, PATH_MAX - strlen(destPath) - 1);
 
-        char src_entry[buffer_size];
-        snprintf(src_entry, buffer_size, "%s/%s", src, dir_entry->d_name);
-
-        char dest_entry[buffer_size];
-        snprintf(dest_entry, buffer_size, "%s/%s", dest, dir_entry->d_name);
-
-        struct stat entry_stat;
-        // Check if the source entry permissions can be retrieved
-        if (stat(src_entry, &entry_stat) < 0)
+        struct stat entryStat;
+        if (stat(srcPath, &entryStat) < 0)
         {
-            perror("Error getting source entry permissions");
-            closedir(src_dir);
+            perror("Error getting entry permissions");
+            closedir(srcDir);
             return -1;
         }
 
-        // Recursively copy directories and files
-        if (S_ISDIR(entry_stat.st_mode))
+        if (S_ISDIR(entryStat.st_mode))
         {
-            // The entry is a directory
-            // Check if the copy operation was successful
-            if (copyDirectory(src_entry, dest_entry) < 0)
+            // Recursively copy subdirectory
+            if (copyDirectory(srcPath, destDirPath) < 0)
             {
-                perror("Error copying directory");
-                closedir(src_dir);
+                closedir(srcDir);
                 return -1;
             }
         }
         else
         {
-            // The entry is a file
-            // Check if the copy operation was successful
-            if (copyFile(src_entry, dest_entry) < 0)
+            // Copy file
+            if (copyFile(srcPath, destDirPath) < 0)
             {
-                perror("Error copying file");
-                closedir(src_dir);
+                closedir(srcDir);
                 return -1;
             }
         }
     }
 
-    closedir(src_dir);
+    closedir(srcDir);
 
-    printf("Directory copied successfully\n");
+    // Copy the permissions of the source directory to the destination directory
+    if (copyPermissions(srcDirectory, destDirPath) < 0)
+    {
+        perror("Error copying directory permissions");
+        return -1;
+    }
 
+    printf("Directory copied successfully: %s -> %s\n", srcDirectory, destDirPath);
     return 0;
 }
 
@@ -304,8 +327,17 @@ int copyDirectory(char *src, char *dest)
  * @param src The paths to the source files or directories.
  * @param dest The path to the destination file or directory.
  */
-void cp(char *src, char *dest)
+void cp(struct dynamicArray *Array)
 {
+    if (Array->size < 2)
+    {
+        fprintf(stderr, "Usage: cp <source>... <destination>\n");
+        return;
+    }
+
+    char *dest = Array->data[Array->size - 1]; // Get the destination path
+    pop_element(Array, Array->size - 1);       // Remove the destination from the array
+
     struct stat dest_stat;
     // Check if the destination exists and is a directory
     if (stat(dest, &dest_stat) < 0)
@@ -326,30 +358,15 @@ void cp(char *src, char *dest)
         return;
     }
 
-    struct dynamicArray src_tokens = init_array(8); // Initialize dynamic array for tokens
-    char *token = strtok(src, " ");
-    while (token != NULL)
-    {
-        add_element(&src_tokens, token); // Add token to dynamic array
-        token = strtok(NULL, " ");
-    }
-
-    // Debuging: Print the source tokens
-    printf("Source tokens:\n");
-    for (size_t i = 0; i < src_tokens.size; i++)
-    {
-        printf("%s\n", src_tokens.data[i]);
-    }
-
     // Iterate through each source token
-    for (size_t i = 0; i < src_tokens.size; i++)
+    for (size_t i = 0; i < Array->size; i++)
     {
-        char *src_path = src_tokens.data[i];
+        char *src_path = Array->data[i];
         struct stat src_stat;
         // Check if the source entry permissions can be retrieved
         if (stat(src_path, &src_stat) < 0)
         {
-            perror("Error getting source entry permissions");
+            fprintf(stderr, "Error getting source entry permissions for file: %s\n", src_path);
             continue;
         }
 
@@ -376,5 +393,5 @@ void cp(char *src, char *dest)
         }
     }
     printf("Copy operation completed successfully\n");
-    free(src_tokens.data); // Free command tokens
+    free(Array->data); // Free command tokens
 }

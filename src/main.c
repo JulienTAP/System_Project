@@ -100,7 +100,8 @@ int main()
         }
         else if (strcmp(tokens.data[0], "cp") == 0)
         {
-            cp(tokens.data[1], tokens.data[2]); // Copy file or directory
+            pop_element(&tokens, 0); // Remove the 'cp' command from tokens
+            cp(&tokens); // Copy file or directory
             free(cwd);
             continue; // Skip to next iteration
         }
