@@ -3,6 +3,7 @@
 #include "input.h"
 #include "dynamicArray.h"
 #include "io.h"
+#include "banner.h"
 
 #include "pipe.h"
 
@@ -17,8 +18,6 @@ int main()
 {
     clear(); // Clear the terminal screen
 
-    
-
     chdir(getenv("HOME")); // Change to home directory
 
     int stdin_backup = dup(STDIN_FILENO);   // Save the input stream
@@ -27,7 +26,7 @@ int main()
     //Using the banner function outside the while loop so that it only appears once 
     display_colored_banner();
 
-    printf("Simple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
+    printf("\nSimple Terminal. Type something and press Enter (type 'exit' or 'q' to quit) :\n");
 
     while (1)
     {
@@ -37,7 +36,7 @@ int main()
 
         char *cwd = get_cwd(); // Get current working directory
 
-        printf("%sPoly_Shell%s %s$> ", BLUE_ON_WHITE, RESET, cwd); // Display the current working directory
+        printf("%sPoly_Shell%s %s$> ", WHITE_ON_BLUE, RESET, cwd); // Display the current working directory
         fflush(stdout);        // Ensure prompt is displayed immediately
 
         char input[1024];
