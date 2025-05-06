@@ -1,0 +1,59 @@
+Rapport de Projet – Implémentation d’un Shell en C
+
+Trinôme : Issam CHAFIQ – Driss HAMADOU - Julien TAP
+Date de soutenance : 9/05/2025
+Projet : Implementation d’un shell en C
+
+1. Introduction
+
+Dans le cadre du projet de Système de l’année universitaire 2024–2025, notre objectif était de développer un shell Unix simplifié en langage C. Ce shell 
+devait permettre l’exécution de commandes usuelles, la gestion des redirections d’entrée/sortie, des pipes simples et multiples, l’exécution en arrière-plan
+, ainsi qu’un affichage visuel personnalisé.
+2. Déroulement du projet
+
+Le développement s’est déroulé sur cinq séances. À chaque étape, des tests ont été effectués pour valider les fonctionnalités implémentées.
+
+Séance 1 – 17/03/2025
+
+Cette première séance a été consacrée à un TP d’introduction afin de se familiariser avec le langage C, la manipulation des pointeurs et la gestion 
+dynamique de la mémoire. Ce travail préparatoire a facilité l’implémentation du tableau dynamique utilisé par la suite.
+
+Séance 2 – 31/03/2025
+
+Lors de cette séance, un shell de base a été implémenté dans le fichier main.c, permettant la lecture de commandes depuis le terminal. Un parseur a ensuite 
+été développé dans le fichier input.c pour découper les commandes en arguments. Des tests unitaires ont été réalisés pour s’assurer de la bonne séparation 
+des chaînes de caractères.
+
+Séance 3 – 07/04/2025
+
+Les premières fonctionnalités d’exécution de commandes ont été implémentées dans le fichier systemfunctions.c. Les commandes standards du shell ont été 
+prises en charge. Un tableau dynamique a été conçu dans dynamicarray.c pour stocker les arguments de manière flexible. Des tests ont permis de confirmer la 
+bonne exécution des commandes et la gestion correcte de la mémoire.
+
+Séance 4 – 28/04/2025
+
+Cette séance a permis d’intégrer la gestion des redirections dans io.c, avec la possibilité d’enchaîner plusieurs redirections. Le support des pipes a été 
+ajouté dans pipe.c, d’abord pour un seul pipe, puis étendu à des pipes multiples. Des tests ont été réalisés à chaque étape pour vérifier la fiabilité des 
+fonctionnalités.
+
+Séance 5 – 02/05/2025
+
+Lors de la dernière séance, l’exécution en arrière-plan a été implémentée. Une bannière visuelle a été ajoutée au démarrage du shell. Des tests globaux ont
+ été effectués afin de vérifier la stabilité de l’ensemble des fonctionnalités implémentées.
+3. Difficultés rencontrées
+
+Plusieurs difficultés ont été rencontrées au cours du projet :
+
+    La gestion des pointeurs vers les commandes, résolue par l’utilisation d’un tableau dynamique.
+
+    La manipulation des redirections successives et la gestion correcte des descripteurs de fichiers.
+
+    L’implémentation des pipes multiples, nécessitant une gestion rigoureuse des processus.
+
+    L’exécution en arrière-plan sans interférer avec les processus au premier plan.
+
+4. Conclusion
+
+Ce projet a permis de mettre en œuvre des compétences avancées en programmation système en langage C. L’ensemble des objectifs fonctionnels a été atteint
+ grâce à une progression méthodique et des tests réguliers. Le shell développé constitue une base solide pouvant être enrichie de fonctionnalités 
+ supplémentaires.
