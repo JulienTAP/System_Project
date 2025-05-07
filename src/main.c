@@ -5,6 +5,7 @@
 #include "io.h"
 #include "structures.h"
 #include "shellHandler.h"
+#include "banner.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -15,9 +16,12 @@
 
 int main()
 {
+
     clear(); // Clear the terminal screen
 
     chdir(getenv("HOME")); // Change to home directory
+
+    display_colored_banner();
 
     while (1)
     {
@@ -27,7 +31,7 @@ int main()
         do_job_notification(); // Check for job notifications
 
         char *cwd = get_cwd(); // Get current working directory
-        printf("%s $> ", cwd); // Display the current working directory
+        printf("\033[37;44mPoly_Shell\033[0m %s > ", cwd); // Display the current working directory
 
         fflush(stdout); // Ensure prompt is displayed immediately
 
