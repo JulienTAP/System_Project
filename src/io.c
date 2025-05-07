@@ -6,7 +6,6 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-
 int *handle_redirection(struct dynamicArray *tokens)
 {
     // Allocate an array to store infile and outfile descriptors

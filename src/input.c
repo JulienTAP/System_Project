@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 // parse inputs on space or "./"
 void parse_input(struct dynamicArray *tokens, char *input, size_t size)
@@ -51,7 +52,7 @@ job *create_job_from_tokens(struct dynamicArray *tokens, int *fds)
     new_job->next = NULL;
     new_job->command = strdup(tokens->data[0]); // Use the first token as the command
     new_job->first_process = NULL;
-    new_job->pgid = getpid(); // Set the process group ID to the current process ID
+    new_job->pgid = 0; 
     new_job->notified = 0;
     memset(&new_job->tmodes, 0, sizeof(struct termios));
     new_job->stdin = fds[0];  // Set stdin to the input file descriptor
@@ -113,4 +114,15 @@ job *create_job_from_tokens(struct dynamicArray *tokens, int *fds)
     }
 
     return new_job;
+}
+
+bool is_background_job(struct dynamicArray *tokens)
+{
+    if (tokens->size > 0 && strcmp(tokens->data[tokens->size - 1], "&") == 0)
+    {
+        // Remove the '&' token from the tokens array
+        pop_element(tokens, tokens->size-1);
+        return true; // Job is a background job
+    }
+    return false; // Job is a foreground job
 }

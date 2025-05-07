@@ -47,32 +47,6 @@ void cd(char *path)
     }
 }
 
-void ls()
-{
-    system("ls");
-}
-
-void execute(char *file, char *args[])
-{
-    pid_t pid = fork();
-    if (pid == 0)
-    {
-        // Child process
-        execvp(file, args);
-        perror("exec failed");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid < 0)
-    {
-        perror("fork failed");
-    }
-    else
-    {
-        // Parent process
-        wait(NULL); // Wait for child process to finish
-    }
-}
-
 /**
  * @brief Prints the permissions of a file.
  *

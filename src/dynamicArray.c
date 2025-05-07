@@ -50,7 +50,7 @@ void add_element(struct dynamicArray *Array, char *element)
 
 void pop_element(struct dynamicArray *Array, int index)
 {
-    if (index > Array->size)
+    if (index > Array->size - 1 || index < 0)
     {
         perror("Index out of range");
     }
@@ -58,9 +58,9 @@ void pop_element(struct dynamicArray *Array, int index)
     {
         for (size_t i = index; i < Array->size - 1; i++)
         {
-            Array->data[i] == Array->data[i + 1];
+            Array->data[i] = Array->data[i + 1];
         }
-        Array->data[Array->size] = NULL;
+        Array->data[Array->size - 1] = NULL;
         Array->size--;
     }
 }
