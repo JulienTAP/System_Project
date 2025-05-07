@@ -1,3 +1,11 @@
+/**
+ * @file io.c
+ * @brief Input/Output redirection handling for shell commands.
+ *
+ * Provides functionality to process and handle file redirection operators ('<' and '>')
+ * in shell commands, managing file descriptors for input and output streams.
+ */
+
 #include "io.h"
 #include <stdio.h>
 #include <string.h>
@@ -6,6 +14,22 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
+/**
+ * @brief Handles input/output redirection in command tokens.
+ * 
+ * Processes a token array to identify and handle redirection operators ('<' for input,
+ * '>' for output). Opens the specified files and returns their file descriptors.
+ * Modifies the token array by removing redirection-related tokens.
+ *
+ * @param tokens Pointer to a dynamic array containing command tokens (including redirection operators)
+ * @return Pointer to a 2-element array of file descriptors [input_fd, output_fd],
+ *         or NULL on failure. Caller must free the returned pointer.
+ *         Default values are STDIN_FILENO (0) and STDOUT_FILENO (1) if no redirection.
+ *
+ * @note The function allocates memory for the returned file descriptor array which
+ *       must be freed by the caller. On error, any opened files are closed and
+ *       memory is freed before returning NULL.
+ */
 int *handle_redirection(struct dynamicArray *tokens)
 {
     // Allocate an array to store infile and outfile descriptors

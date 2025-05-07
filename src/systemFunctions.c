@@ -1,3 +1,11 @@
+/**
+ * @file systemFunctions.c
+ * @brief Implementation of system-level functions for a shell.
+ *
+ * Provides functions for directory navigation, file operations, and system utilities
+ * including clear screen, working directory management, file copying, and permission handling.
+ */
+
 #define _GNU_SOURCE
 
 #include "systemFunctions.h"

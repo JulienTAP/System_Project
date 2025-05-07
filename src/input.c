@@ -1,3 +1,12 @@
+/**
+ * @file input.c
+ * @brief Input parsing and job creation for shell commands.
+ * 
+ * Provides functionality to parse user input into tokens and create job structures
+ * from these tokens, handling both foreground and background processes as well as
+ * command pipelines.
+ */
+
 #include "input.h"
 #include "dynamicArray.h"
 #include "structures.h"
@@ -6,7 +15,16 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-// parse inputs on space or "./"
+/**
+ * @brief Parses user input into tokens.
+ * 
+ * Reads input from stdin and splits it into tokens using spaces as delimiters.
+ * The resulting tokens are stored in a dynamic array for further processing.
+ * 
+ * @param tokens Pointer to a dynamic array where tokens will be stored
+ * @param input Buffer to store the raw input string
+ * @param size Size of the input buffer
+ */
 void parse_input(struct dynamicArray *tokens, char *input, size_t size)
 {
 
@@ -32,7 +50,20 @@ void parse_input(struct dynamicArray *tokens, char *input, size_t size)
 }
 
 
-// Create a job from the parsed tokens
+/**
+ * @brief Creates a job structure from parsed tokens.
+ * 
+ * Processes the token array to create a job structure containing one or more
+ * processes (for pipelined commands). Handles file descriptor redirection
+ * and command argument processing.
+ * 
+ * @param tokens Pointer to dynamic array containing command tokens
+ * @param fds Array containing input/output file descriptors [stdin, stdout]
+ * @return Pointer to the created job structure, or NULL on failure
+ * 
+ * @note The caller is responsible for freeing the returned job structure
+ *       and all its associated memory.
+ */
 job *create_job_from_tokens(struct dynamicArray *tokens, int *fds)
 {
     if (tokens == NULL || tokens->size == 0)
@@ -116,6 +147,15 @@ job *create_job_from_tokens(struct dynamicArray *tokens, int *fds)
     return new_job;
 }
 
+/**
+ * @brief Determines if a command should run in background.
+ * 
+ * Checks the token array for a trailing '&' character indicating
+ * the command should run as a background job.
+ * 
+ * @param tokens Pointer to dynamic array containing command tokens
+ * @return true if the command should run in background, false otherwise
+ */
 bool is_background_job(struct dynamicArray *tokens)
 {
     if (tokens->size > 0 && strcmp(tokens->data[tokens->size - 1], "&") == 0)
