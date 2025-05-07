@@ -47,51 +47,6 @@ void cd(char *path)
     }
 }
 
-void ls()
-{
-    // List files in the current directory
-    DIR *dir = opendir(".");
-    if (dir == NULL)
-    {
-        perror("opendir failed");
-        return;
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL)
-    {
-        if (entry->d_name[0] == '.')
-        {
-            continue; // Skip hidden files
-        }
-        printf("%s\t\t", entry->d_name);
-    }
-
-    printf("\n");
-    closedir(dir);
-}
-
-void execute(char *file, char *args[])
-{
-    pid_t pid = fork();
-    if (pid == 0)
-    {
-        // Child process
-        execvp(file, args);
-        perror("exec failed");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid < 0)
-    {
-        perror("fork failed");
-    }
-    else
-    {
-        // Parent process
-        wait(NULL); // Wait for child process to finish
-    }
-}
-
 /**
  * @brief Prints the permissions of a file.
  *

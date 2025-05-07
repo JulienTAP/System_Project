@@ -6,64 +6,33 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-int redirect_input(const char *source)
+int *handle_redirection(struct dynamicArray *tokens)
 {
-    // Open the source file for reading only
-    int new_input = open(source, O_RDONLY | O_CREAT, 0666);
-    if (new_input < 0)
+    // Allocate an array to store infile and outfile descriptors
+    int *fds = (int *)malloc(2 * sizeof(int));
+    if (!fds)
     {
-        perror("Failed to open source file");
-        return -1;
+        perror("malloc failed for file descriptors");
+        return NULL;
     }
 
-    // Replace stdin with the source file
-    if (dup2(new_input, STDIN_FILENO) < 0)
-    {
-        perror("Failed to redirect input");
-        close(new_input);
-        return -1;
-    }
-
-    // Close the now-unnecessary file descriptor
-    close(new_input);
-    return 0;
-}
-
-int redirect_output(const char *output)
-{
-    // Open or create the output file for writing
-    int new_output = open(output, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-    if (new_output < 0)
-    {
-        perror("Failed to open output file");
-        return -1;
-    }
-
-    // Replace stdout with the output file
-    if (dup2(new_output, STDOUT_FILENO) < 0)
-    {
-        perror("Failed to redirect output");
-        close(new_output);
-        return -1;
-    }
-
-    // Close the now-unnecessary file descriptor
-    close(new_output);
-    return 0;
-}
-
-void handle_redirection(struct dynamicArray *tokens)
-{
+    // Initialize infile and outfile to default (stdin and stdout)
+    fds[0] = STDIN_FILENO;  // infile
+    fds[1] = STDOUT_FILENO; // outfile
 
     for (size_t i = 0; i < tokens->size; i++)
     {
         if (strcmp(tokens->data[i], "<") == 0 && i + 1 < tokens->size)
         {
-            // Redirect input from the file specified after "<"
-            if (redirect_input(tokens->data[i + 1]) < 0)
+            // Open the input file
+            fds[0] = open(tokens->data[i + 1], O_RDONLY);
+            if (fds[0] < 0)
             {
-                fprintf(stderr, "Error redirecting input\n");
+                perror("Failed to open input file");
+                free(fds);
+                return NULL;
             }
+
             // Remove the redirection token and its argument from the array
             for (size_t j = i; j < tokens->size - 2; j++)
             {
@@ -74,11 +43,15 @@ void handle_redirection(struct dynamicArray *tokens)
         }
         else if (strcmp(tokens->data[i], ">") == 0 && i + 1 < tokens->size)
         {
-            // Redirect output to the file specified after ">"
-            if (redirect_output(tokens->data[i + 1]) < 0)
+            // Open the output file
+            fds[1] = open(tokens->data[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (fds[1] < 0)
             {
-                fprintf(stderr, "Error redirecting output\n");
+                perror("Failed to open output file");
+                free(fds);
+                return NULL;
             }
+
             // Remove the redirection token and its argument from the array
             for (size_t j = i; j < tokens->size - 2; j++)
             {
@@ -88,4 +61,6 @@ void handle_redirection(struct dynamicArray *tokens)
             i--; // Adjust index to account for removed elements
         }
     }
+
+    return fds;
 }

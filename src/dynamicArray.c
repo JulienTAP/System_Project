@@ -60,7 +60,7 @@ void pop_element(struct dynamicArray *Array, int index)
         {
             Array->data[i] = Array->data[i + 1];
         }
-        Array->data[Array->size] = NULL;
+        Array->data[Array->size - 1] = NULL;
         Array->size--;
     }
 }
