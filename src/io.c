@@ -16,7 +16,7 @@
 
 /**
  * @brief Handles input/output redirection in command tokens.
- * 
+ *
  * Processes a token array to identify and handle redirection operators ('<' for input,
  * '>' for output). Opens the specified files and returns their file descriptors.
  * Modifies the token array by removing redirection-related tokens.

@@ -15,9 +15,9 @@
 
 /**
  * @brief Initializes a new dynamic array with specified capacity.
- * 
+ *
  * Allocates memory for the array storage. Exits on allocation failure.
- * 
+ *
  * @param capacity Initial capacity of the array
  * @return Initialized dynamicArray structure
  */
@@ -40,15 +40,15 @@ struct dynamicArray init_array(size_t capacity)
 
 /**
  * @brief Doubles the capacity of a dynamic array.
- * 
+ *
  * Creates a new storage area with double capacity and copies existing elements.
  * Frees the old storage and updates the array structure.
- * 
+ *
  * @param Array Pointer to the dynamic array to expand
  */
 void add_capacity(struct dynamicArray *Array)
 {
-    char **NewArray = (char **)calloc(2 * Array->capacity, sizeof(char*));
+    char **NewArray = (char **)calloc(2 * Array->capacity, sizeof(char *));
     if (NewArray == NULL)
     {
         perror("calloc failed");
@@ -56,7 +56,7 @@ void add_capacity(struct dynamicArray *Array)
     }
     else
     {
-        memcpy(NewArray, Array->data, Array->size * sizeof(char*));
+        memcpy(NewArray, Array->data, Array->size * sizeof(char *));
         free(Array->data);
         Array->data = NewArray;
         Array->capacity *= 2;
@@ -65,9 +65,9 @@ void add_capacity(struct dynamicArray *Array)
 
 /**
  * @brief Adds an element to the dynamic array.
- * 
+ *
  * Automatically expands the array if capacity is reached.
- * 
+ *
  * @param Array Pointer to the dynamic array
  * @param element String to add to the array (pointer is stored directly)
  */
@@ -83,9 +83,9 @@ void add_element(struct dynamicArray *Array, char *element)
 
 /**
  * @brief Removes an element from the dynamic array by index.
- * 
+ *
  * Shifts remaining elements to fill the gap. Does not free the element memory.
- * 
+ *
  * @param Array Pointer to the dynamic array
  * @param index Position of element to remove (0-based)
  */
@@ -108,9 +108,9 @@ void pop_element(struct dynamicArray *Array, int index)
 
 /**
  * @brief Prints all elements in the dynamic array.
- * 
+ *
  * Displays the current size followed by each element on a new line.
- * 
+ *
  * @param Array Pointer to the dynamic array to print
  */
 void print_elements(struct dynamicArray *Array)
@@ -125,7 +125,7 @@ void print_elements(struct dynamicArray *Array)
 
 /**
  * @brief Checks if the dynamic array is empty.
- * 
+ *
  * @param Array Pointer to the dynamic array to check
  * @return true if array has no elements, false otherwise
  */

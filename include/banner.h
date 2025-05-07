@@ -16,7 +16,7 @@
 #define WHITE "\033[1;37m"
 #define RESET "\033[0m"
 #define WHITE_ON_BLUE "\033[1;37;44m"
-    
+
 /**
  * @file banner.h
  * @brief Colorful ASCII art banner display for shell applications.
@@ -25,7 +25,8 @@
  * coloring using ANSI escape sequences. Includes color definitions for terminal
  * text formatting.
  */
-void display_colored_banner() {
+void display_colored_banner()
+{
     printf(BLUE "██████" WHITE "╗  " BLUE "██████" WHITE "╗ " BLUE "██" WHITE "╗  " BLUE "██" WHITE "╗   " BLUE "██" WHITE "╗     " BLUE "███████" WHITE "╗" BLUE "██" WHITE "╗  " BLUE "██" WHITE "╗" BLUE "███████" WHITE "╗" BLUE "██" WHITE "╗     " BLUE "██" WHITE "╗     \n");
     printf(BLUE "██" WHITE "╔══" BLUE "██" WHITE "╗" BLUE "██" WHITE "╔═══" BLUE "██" WHITE "╗" BLUE "██" WHITE "║  " WHITE "╚" BLUE "██" WHITE "╗ " BLUE "██" WHITE "╔╝     " BLUE "██" WHITE "╔════╝" BLUE "██" WHITE "║  " BLUE "██" WHITE "║" BLUE "██" WHITE "╔════╝" BLUE "██" WHITE "║     " BLUE "██" WHITE "║      \n");
     printf(BLUE "██████" WHITE "╔╝" BLUE "██" WHITE "║   " BLUE "██" WHITE "║" BLUE "██" WHITE "║   " WHITE "╚" BLUE "████" WHITE "╔╝      " BLUE "███████" WHITE "╗" BLUE "███████" WHITE "║" BLUE "█████" WHITE "╗  " BLUE "██" WHITE "║     " BLUE "██" WHITE "║      \n");

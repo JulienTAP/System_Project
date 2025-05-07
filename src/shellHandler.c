@@ -1,7 +1,7 @@
 /**
  * @file shellHandler.c
  * @brief Job control and process management for a simple shell.
- * 
+ *
  * Handles foreground/background jobs, process groups, signals, and I/O redirection.
  * Maintains a list of active jobs and provides functions to launch, track, and manage them.
  */
@@ -24,10 +24,10 @@ static int shell_is_interactive;
 
 /**
  * @brief Updates the status of a process in the job list.
- * 
- * This function checks the status returned by waitpid() and updates the corresponding 
+ *
+ * This function checks the status returned by waitpid() and updates the corresponding
  * process in the job list (stopped, completed, or terminated by a signal).
- * 
+ *
  * @param pid The process ID to update.
  * @param status The status returned by waitpid().
  * @return 0 on success, -1 on error.
@@ -73,9 +73,9 @@ int mark_process_status(pid_t pid, int status)
 
 /**
  * @brief Waits for a job to report status changes.
- * 
+ *
  * Blocks until all processes in the job have reported their status (stopped or completed).
- * 
+ *
  * @param j The job to wait for.
  */
 void wait_for_job(job *j)
@@ -89,9 +89,9 @@ void wait_for_job(job *j)
 
 /**
  * @brief Prints formatted job information for the user.
- * 
+ *
  * Displays the job's PGID, status, and command string.
- * 
+ *
  * @param j The job to display.
  * @param status A string describing the job's status (e.g., "stopped", "completed").
  */
@@ -102,8 +102,8 @@ void format_job_info(job *j, const char *status)
 
 /**
  * @brief Notifies the user about job state changes.
- * 
- * Checks all jobs for stopped/completed processes, prints notifications, 
+ *
+ * Checks all jobs for stopped/completed processes, prints notifications,
  * and removes terminated jobs from the active list.
  */
 void do_job_notification(void)
@@ -148,9 +148,9 @@ void do_job_notification(void)
 
 /**
  * @brief Sets the first job in the global job list.
- * 
+ *
  * Internal function used to manage the linked list of active jobs.
- * 
+ *
  * @param job The job to set as the first in the list.
  */
 void set_first_job(job *job)
@@ -161,7 +161,7 @@ void set_first_job(job *job)
 
 /**
  * @brief Initializes shell settings for job control.
- * 
+ *
  * Configures interactive mode, signal handling, process group, and terminal control.
  * Must be called before any job management functions.
  */
@@ -203,9 +203,9 @@ void init_shell()
 
 /**
  * @brief Finds a job by its process group ID (PGID).
- * 
+ *
  * Searches the active job list for a job matching the specified PGID.
- * 
+ *
  * @param pgid The process group ID to search for.
  * @return Pointer to the job if found, NULL otherwise.
  */
@@ -222,7 +222,7 @@ job *find_job(pid_t pgid)
 
 /**
  * @brief Checks if all processes in a job are stopped.
- * 
+ *
  * @param j The job to check.
  * @return 1 if all processes are stopped, 0 otherwise.
  */
@@ -238,7 +238,7 @@ int job_is_stopped(job *j)
 
 /**
  * @brief Checks if all processes in a job have completed.
- * 
+ *
  * @param j The job to check.
  * @return 1 if all processes are completed, 0 otherwise.
  */
@@ -254,16 +254,16 @@ int job_is_completed(job *j)
 
 /**
  * @brief Launches a single process with redirection and signal handling.
- * 
+ *
  * Forks a new process, sets up I/O redirection, and executes the command.
- * 
+ *
  * @param p The process to launch.
  * @param pgid The process group ID (0 to create a new group).
  * @param infile Input file descriptor.
  * @param outfile Output file descriptor.
  * @param errfile Error file descriptor.
  * @param foreground 1 to run in foreground, 0 for background.
- */ 
+ */
 void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
 	pid_t pid;
@@ -314,9 +314,9 @@ void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile
 
 /**
  * @brief Moves a job to the foreground.
- * 
+ *
  * Resumes the job if needed and waits for completion.
- * 
+ *
  * @param j The job to foreground.
  * @param cont 1 to send SIGCONT (resume), 0 otherwise.
  */
@@ -346,9 +346,9 @@ void put_job_in_foreground(job *j, int cont)
 
 /**
  * @brief Moves a job to the background.
- * 
+ *
  * Resumes the job if needed without terminal control.
- * 
+ *
  * @param j The job to background.
  * @param cont 1 to send SIGCONT (resume), 0 otherwise.
  */
@@ -362,9 +362,9 @@ void put_job_in_background(job *j, int cont)
 
 /**
  * @brief Marks a stopped job as running.
- * 
+ *
  * Clears the "stopped" flag for all processes in the job.
- * 
+ *
  * @param j The job to mark as running.
  */
 void mark_job_as_running(job *j)
@@ -378,9 +378,9 @@ void mark_job_as_running(job *j)
 
 /**
  * @brief Resumes a stopped job.
- * 
+ *
  * Continues the job in either foreground or background mode.
- * 
+ *
  * @param j The job to resume.
  * @param foreground 1 to run in foreground, 0 for background.
  */
@@ -395,9 +395,9 @@ void continue_job(job *j, int foreground)
 
 /**
  * @brief Launches a job (forking processes, setting up pipes).
- * 
+ *
  * Handles process creation, I/O redirection, and foreground/background execution.
- * 
+ *
  * @param j The job to launch.
  * @param foreground 1 to run in foreground, 0 for background.
  */
@@ -468,9 +468,9 @@ void launch_job(job *j, int foreground)
 
 /**
  * @brief Prints detailed information about a job.
- * 
+ *
  * Displays PGID, process IDs, and command arguments.
- * 
+ *
  * @param j The job to print.
  */
 void print_job_info(job *j)
@@ -491,7 +491,7 @@ void print_job_info(job *j)
 
 /**
  * @brief Prints information about all active jobs.
- * 
+ *
  * Wrapper for print_job_info() on the entire job list.
  */
 void print_jobs_info()
@@ -511,7 +511,7 @@ void print_jobs_info()
 
 /**
  * @brief Adds a job to the active job list.
- * 
+ *
  * @param new_job The job to add.
  */
 void add_job(job *new_job)
@@ -522,7 +522,7 @@ void add_job(job *new_job)
 
 /**
  * @brief Lists all active jobs (PGID and command).
- * 
+ *
  * Prints a compact overview of running/stopped jobs.
  */
 void list_jobs()
@@ -543,7 +543,7 @@ void list_jobs()
 
 /**
  * @brief Frees memory for a single job and its processes.
- * 
+ *
  * @param j The job to delete.
  */
 void delete_job(job *j)
@@ -565,7 +565,7 @@ void delete_job(job *j)
 
 /**
  * @brief Cleans up all jobs in the global list.
- * 
+ *
  * Frees all job-related memory before shell exit.
  */
 void delete_all_jobs()

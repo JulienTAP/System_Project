@@ -30,7 +30,7 @@ int main()
 
         do_job_notification(); // Check for job notifications
 
-        char *cwd = get_cwd(); // Get current working directory
+        char *cwd = get_cwd();                             // Get current working directory
         printf("\033[37;44mPoly_Shell\033[0m %s > ", cwd); // Display the current working directory
 
         fflush(stdout); // Ensure prompt is displayed immediately
@@ -110,8 +110,8 @@ int main()
         }
         else if (strcmp(tokens.data[0], "cp") == 0)
         {
-            pop_element(&tokens, 0);            // Remove the 'cp' command from tokens
-            cp(&tokens); // Copy files/directories
+            pop_element(&tokens, 0); // Remove the 'cp' command from tokens
+            cp(&tokens);             // Copy files/directories
             free(cwd);
             continue; // Skip to next iteration
         }
