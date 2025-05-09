@@ -1,0 +1,29 @@
+ls
+
+ls | grep Documents
+
+ls | grep Documents | wc -l
+
+cd Documents
+
+ls > test.txt
+
+ls < test.txt
+
+mkdir directory
+
+ping google.com > directory/test.txt
+
+cat directory/test.txt
+
+cp directory directory2
+
+tree (opt)
+
+ls -l
+
+cat directory2/directory/test.txt
+
+nvim
+
+jobs -l
