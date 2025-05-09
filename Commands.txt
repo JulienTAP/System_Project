@@ -6,6 +6,10 @@ ls | grep Documents | wc -l
 
 cd Documents
 
+mkdir Test
+
+cd Test
+
 ls > test.txt
 
 ls < test.txt
